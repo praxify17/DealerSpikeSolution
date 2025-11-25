@@ -1,21 +1,28 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using ProductEndpoint.Data;
 
 namespace ProductEndpoint.Controllers
 {
-	[Route("api/[controller]")]
-	[ApiController]
 	public class ProductController : Controller
 	{
+		private readonly ProductDbContext _context;
+
+		public ProductController(ProductDbContext context)
+		{
+			_context = context;
+		}
+
 		[HttpGet]
+		public IActionResult Index()
+		{
+			var products = _context.Products.ToList();
+			return View(products);
+		}
+
+		[HttpGet("api/products")]
 		public IActionResult GetProducts()
 		{
-			var products = new List<object>
-			{
-				new { id = 1, name = "Laptop", price = 50000 },
-				new { id = 2, name = "Phone", price = 20000 }
-			};
-
-			return Ok(products);
+			return Ok(_context.Products.ToList());
 		}
 	}
 }
