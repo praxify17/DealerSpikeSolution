@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ProductEndpoint.Data;
+using ProductEndpoint.Model;
 
 namespace ProductEndpoint.Controllers
 {
@@ -23,6 +24,18 @@ namespace ProductEndpoint.Controllers
 		public IActionResult GetProducts()
 		{
 			return Ok(_context.Products.ToList());
+		}
+
+		[HttpPost("api/products")]
+		public IActionResult CreateProduct([FromBody] Product model)
+		{
+			if (!ModelState.IsValid)
+				return BadRequest(ModelState);
+
+			_context.Products.Add(model);
+			_context.SaveChanges();
+
+			return Ok(model);
 		}
 	}
 }
