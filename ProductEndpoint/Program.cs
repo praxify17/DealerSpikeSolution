@@ -1,6 +1,7 @@
-using Microsoft.EntityFrameworkCore;
 using ProductEndpoint.Data;
-using static ProductEndpoint.Data.DumyData;
+using ProductEndpoint.Mapping;
+using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +13,14 @@ builder.Services.AddDbContext<ProductDbContext>(options =>
 	options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddControllers();
+builder.Services.AddControllers()
+	.AddJsonOptions(options =>
+	{
+		options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+		options.JsonSerializerOptions.WriteIndented = true;
+	});
+// Add AutoMapper
+builder.Services.AddAutoMapper(typeof(MappingProfile));
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -22,7 +31,6 @@ builder.Services.AddCors(options =>
 			  .AllowAnyHeader()
 			  .AllowAnyMethod());
 });
-
 
 var app = builder.Build();
 
@@ -36,7 +44,7 @@ if (app.Environment.IsDevelopment())
 using (var scope = app.Services.CreateScope())
 {
 	var dbContext = scope.ServiceProvider.GetRequiredService<ProductDbContext>();
-	DumyData.Seed(dbContext);
+	DummyData.Seed(dbContext);
 }
 
 app.UseHttpsRedirection();

@@ -8,12 +8,13 @@ namespace ProductEndpoint.Data
 		public ProductDbContext(DbContextOptions<ProductDbContext> options)
 			: base(options) { }
 
-		protected override void OnModelCreating(ModelBuilder modelBuilder)
-		{
-			modelBuilder.Entity<Product>().Property(p => p.Price).HasPrecision(18, 2);
-			modelBuilder.Entity<Product>().Property(p => p.ImageUrl).IsRequired(false);
-		}
-
-		public DbSet<Model.Product> Products { get; set; }
+		public DbSet<Product> Products { get; set; }
+		public DbSet<Brand> Brands { get; set; }
+		public DbSet<ProductType> ProductTypes { get; set; }
+		public DbSet<ProductSubType> ProductSubTypes { get; set; }
+		public DbSet<MediaItem> MediaItems { get; set; }
+		public DbSet<Pricing> Pricings { get; set; }
+		public DbSet<Location> Locations { get; set; }
+		public DbSet<ProductAttributes> ProductAttributes { get; set; }
 	}
 }

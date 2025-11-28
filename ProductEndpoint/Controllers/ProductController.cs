@@ -1,41 +1,53 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using ProductEndpoint.Data;
-using ProductEndpoint.Model;
+using ProductEndpoint.DTOs;
+using AutoMapper;
 
 namespace ProductEndpoint.Controllers
 {
-	public class ProductController : Controller
-	{
-		private readonly ProductDbContext _context;
+    [Route("api/v1/Sites/{siteId}/ProductKind/InStockUnit/[controller]")]
+    [ApiController]
+    public class ProductsController : ControllerBase
+    {
+        private readonly ProductDbContext _context;
+        private readonly IMapper _mapper;
 
-		public ProductController(ProductDbContext context)
-		{
-			_context = context;
-		}
+        public ProductsController(ProductDbContext context, IMapper mapper)
+        {
+            _context = context;
+            _mapper = mapper;
+        }
 
-		[HttpGet]
-		public IActionResult Index()
-		{
-			var products = _context.Products.ToList();
-			return View(products);
-		}
+        [HttpGet]
+        public async Task<IActionResult> GetProducts(int siteId)
+        {
+            var products = await _context.Products
+                .Include(p => p.Brand)
+                .Include(p => p.Type).ThenInclude(t => t.SubTypes)
+                .Include(p => p.Media)
+                .Include(p => p.Pricing)
+                .Include(p => p.Location)
+                .Include(p => p.Attributes)
+                .ToListAsync();
 
-		[HttpGet("api/products")]
-		public IActionResult GetProducts()
-		{
-			return Ok(_context.Products.ToList());
-		}
+            if (products == null || products.Count == 0)
+                return NotFound();
 
-		[HttpPost("api/products")]
-		public IActionResult CreateProduct([FromBody] Product model)
-		{
-			if (!ModelState.IsValid)
-				return BadRequest(ModelState);
+            // Map entities to DTOs
+            var productDtos = _mapper.Map<List<ProductDto>>(products);
 
-			_context.Products.Add(model);
-			_context.SaveChanges();
+            // Use the first product for brand/type info (adjust as needed)
+            var firstProduct = products.First();
 
-			return Ok(model);
-		}
-	}
+            var response = new
+            {
+                brand = _mapper.Map<BrandDto>(firstProduct.Brand),
+                type = _mapper.Map<ProductTypeDto>(firstProduct.Type),
+                products = productDtos
+            };
+
+            return Ok(response);
+        }
+    }
 }
