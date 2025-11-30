@@ -23,6 +23,7 @@ namespace ProductEndpoint.Controllers
         public async Task<IActionResult> GetProducts(int siteId)
         {
             var products = await _context.Products
+                .Where(p => p.SiteId == siteId)
                 .Include(p => p.Brand)
                 .Include(p => p.Type).ThenInclude(t => t.SubTypes)
                 .Include(p => p.Media)

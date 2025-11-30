@@ -21,6 +21,7 @@
 		public string ImageUrl { get; internal set; }
 		public int BrandId { get; internal set; }
 		public int ProductTypeId { get; internal set; }
+		public int SiteId { get; set; }
 	}
 
 }

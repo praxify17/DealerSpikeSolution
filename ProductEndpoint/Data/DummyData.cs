@@ -103,7 +103,8 @@ public static class DummyData
 
         for (int idx = 0; idx < 5; idx++)
         {
-            var existingProduct = context.Products.FirstOrDefault(p => p.Name == productNames[idx] && p.Year == productYears[idx]);
+            var existingProduct = context.Products
+                .FirstOrDefault(p => p.Name == productNames[idx] && p.Year == productYears[idx] && p.SiteId == 35619);
             if (existingProduct == null)
             {
                 var product = new Product
@@ -123,7 +124,8 @@ public static class DummyData
                     {
                         StockNumber = stockNumbers[idx],
                         VIN = vins[idx]
-                    }
+                    },
+                    SiteId = 35619
                 };
 
                 context.Products.Add(product);
