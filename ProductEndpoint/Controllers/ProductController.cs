@@ -50,5 +50,35 @@ namespace ProductEndpoint.Controllers
 
             return Ok(response);
         }
+
+        [HttpGet("{productId}/details")]
+        public async Task<IActionResult> GetAllDetails(int siteId, int productId)
+        {
+            var product = await _context.Products
+                .Where(p => p.SiteId == siteId && p.Id == productId)
+                .Include(p => p.Brand)
+                .Include(p => p.Type).ThenInclude(t => t.SubTypes)
+                .Include(p => p.Media)
+                .Include(p => p.Pricing)
+                .Include(p => p.Location)
+                .Include(p => p.Attributes)
+                .FirstOrDefaultAsync();
+
+            if (product == null)
+                return NotFound();
+
+            var productDto = _mapper.Map<ProductDto>(product);
+            var brandDto = _mapper.Map<BrandDto>(product.Brand);
+            var typeDto = _mapper.Map<ProductTypeDto>(product.Type);
+
+            var response = new ProductListDto
+            {
+                Brand = brandDto,
+                Type = typeDto,
+                Products = new List<ProductDto> { productDto }
+            };
+
+            return Ok(response);
+        }
     }
 }
