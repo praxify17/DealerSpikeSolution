@@ -1,0 +1,9 @@
+@{
+    ViewData["Title"] = "Products";
+    var siteId = (int)(ViewData["SiteId"] ?? 35619);
+}
+
+<section>
+    <h2>Products</h2>
+    @await Component.InvokeAsync("Products", new { siteId })
+</section>

@@ -32,6 +32,13 @@ builder.Services.AddCors(options =>
 			  .AllowAnyMethod());
 });
 
+// HttpClient used by the ViewComponent to call the internal API
+builder.Services.AddHttpClient("ProductsApi", client =>
+{
+    var baseUrl = builder.Configuration["AppBaseUrl"] ?? "https://localhost:7042/";
+    client.BaseAddress = new Uri(baseUrl);
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -56,7 +63,7 @@ app.UseCors("AllowReactApp");
 app.UseStaticFiles();
 app.UseRouting();
 app.MapControllerRoute(
-	name: "default",
-	pattern: "{controller=Products}/{action=Index}/{id?}");
+    name: "default",
+    pattern: "{controller=ProductsPage}/{action=Index}/{id?}");
 
 app.Run();

@@ -1,0 +1,41 @@
+@model ProductEndpoint.DTOs.ProductsResponseDto
+@{
+    var brand = Model?.Brand;
+    var type = Model?.Type;
+    var products = Model?.Products;
+}
+
+<div class="products-component">
+    <header class="products-header">
+        <div class="brand">
+            <strong>Brand:</strong> @brand?.Name
+        </div>
+        <div class="type">
+            <strong>Type:</strong> @type?.Name
+        </div>
+    </header>
+
+    @if (products == null || !products.Any())
+    {
+        <div class="empty-state">No products found.</div>
+    }
+    else
+    {
+        <ul class="products-list" style="display:flex; flex-wrap:wrap; gap:16px; list-style:none; padding:0; margin:0;">
+            @foreach (var p in products!)
+            {
+                <li class="product-card" style="flex:0 0 auto; width:260px; border:1px solid #e0e0e0; border-radius:8px; padding:12px;">
+                    <div class="product-name" style="font-weight:600; margin-bottom:6px;">@p?.Name</div>
+                    <div class="product-year">Year: @p?.Year</div>
+                    <div class="product-brand">Brand: @p?.BrandName</div>
+                    <div class="product-type">Type: @p?.ProductTypeName</div>
+                    <div class="product-price">Price: @p?.Price</div>
+                    @if (!string.IsNullOrEmpty(p?.ImageUrl))
+                    {
+                        <img src="@p.ImageUrl" alt="@p.Name" style="max-width:100%; border-radius:6px; margin-top:8px;" />
+                    }
+                </li>
+            }
+        </ul>
+    }
+</div>
